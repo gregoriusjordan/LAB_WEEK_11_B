@@ -1,0 +1,29 @@
+Gregorius Jordan/00000093655
+
+Answer these questions based on Part 3 of the tutorial:
+1. When a user takes a picture, that picture is stored in a path based on the given
+URI. In which part of the code handles this? (Copy that part of the code as the
+answer)
+    private fun takePicture() {
+        val time = Date().time
+        latestTmpUri = providerManager.generatePhotoUri(time)
+        latestTmpUri?.let {
+            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            // This line provides the URI for the camera to store the photo
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, it.uri)
+            takePicture.launch(takePictureIntent)
+        }
+    }
+    
+
+
+
+2. In your FileInfo.kt, there are 5 attributes. On the first attribute, what does the URI refer to? And on the fourth attribute, what does relativePath refer to?
+Atribut pertama, yaitu uri, bisa dianggap sebagai alamat file sementara yang dibuat oleh FileProvider. Sederhananya, ini seperti “link aman” yang hanya bisa diakses oleh aplikasi kamera untuk sementara waktu. Fungsinya supaya aplikasi kamera bisa menyimpan hasil foto ke dalam penyimpanan privat aplikasimu tanpa perlu izin akses penuh ke storage ponsel.
+
+Sementara itu, atribut keempat yaitu relativePath menunjuk pada folder publik di galeri, misalnya folder Pictures atau Movies. Setelah foto berhasil diambil dan disimpan sementara melalui uri, barulah file tersebut akan dipindahkan ke folder publik ini supaya bisa muncul di aplikasi galeri dan dapat diakses oleh pengguna seperti foto biasa.
+
+3. [Bonus] Explain the chronological order from when a user takes a picture until
+the file is stored in the MediaStore.
+
+Saat pengguna membuka kamera, aplikasi terlebih dahulu mengecek izin melalui fungsi `checkStoragePermission()`. Jika izin diberikan, maka aplikasi membuat file sementara menggunakan `openImageCapture()` yang nantinya akan berisi data foto asli. Setelah file siap, kamera dijalankan, dan ketika pengguna mengambil gambar, callback `takePictureLauncher` akan dipicu. Pada tahap ini, file foto akan disimpan menggunakan `providerManager.insertImageToStore(photoInfo)`. Setelah proses tersebut selesai, foto yang diambil sudah tersimpan di perangkat dan bisa diakses.
